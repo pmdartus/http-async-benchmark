@@ -6,8 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmdartus/http-async-benchmark.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pmdartus/http-async-benchmark/issues"
+  },
+  "homepage": "https://github.com/pmdartus/http-async-benchmark#readme",
   "dependencies": {
     "agentkeepalive": "^2.0.2",
     "async": "^1.3.0",
