@@ -1,7 +1,12 @@
 'use strict';
 
 var fs = require('fs');
+var util = require('util');
 var path = require('path');
+
+var config = require('../config');
+
+var SEARS_PATTERN = "http://www.searsoutlet.com/d/store.jsp?store=%s&cid=0&ps=50";
 
 var resolvePath = function(relPath) {
   var execPath = process.cwd();
@@ -19,15 +24,34 @@ var loadStore = function(path, cb) {
     }
 
     var stores = data.split('\n');
+    stores = stores.slice(0, config.iterations);
+
     stores = stores.map(function(store) {
-      return JSON.parse(store);
+      var parsed = JSON.parse(store);
+      parsed.url = util.format(SEARS_PATTERN, parsed.store_id);
+      return parsed;
     });
 
     cb(null, stores);
   });
 };
 
+var analyseRes = function(times) {
+  var sum = times.reduce(function(sum, value){
+    return sum + value;
+  }, 0);
+   
+  var avg = sum / times.length;
+  return {
+    requestsNumber: times.length, 
+    max: Math.max.apply(null, times),
+    min: Math.min.apply(null, times),
+    avg: avg,
+  };
+};
+
 module.exports = {
   loadStores: loadStore,
-  resolvePath: resolvePath
+  resolvePath: resolvePath,
+  analyseRes: analyseRes
 };
