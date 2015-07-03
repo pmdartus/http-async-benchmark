@@ -1,4 +1,4 @@
 {
-	"currency": 30,
-	"iterations": null
+	"concurrency": 3,
+	"iterations": 1
 }
