@@ -1,37 +1,25 @@
-var http = require('https');
-var async = require('async');
-var config = require('../config.json');
-var HttpsAgent = require('agentkeepalive').HttpsAgent;
- 
-module.exports = function(cb) {
-  var keepaliveAgent = new HttpsAgent();
-   
-  var options = {
-    host: config.host,
-    method: 'GET',
-    agent: keepaliveAgent
-  };
+'use strict';
 
-  var start = new Date();
-  async.map(config.paths, function(path, cb) {
-    var option = options;
-    option.path = path;
+var request = require('request');
+var Agent = require('agentkeepalive');
 
-    var req = http.request(option, function (res) {
-      return cb(null, res.statusCode);
-    });
-     
-    req.on('error', function (e) {
-      return cb(e.message);
-    });
-    req.end();
 
+var agent = new Agent();
+
+module.exports = function(task, cb) {
+  var start = new Date().getTime();
+  request(task.url, {
+    method: "GET",
+    agent: agent,
+    headers: {"Connection":"Keep-Alive"}
   }, function(err, res) {
     if(err) {
-      return cb(err);
+      console.log(err);
+    } else if (res.statusCode !== 200) {
+      console.log('ERROR --> ', task.url, res.statusCode);
     }
 
-    var end = new Date();
-    return cb(null, end - start);
+    var end = new Date().getTime();
+    cb(null, end - start);
   });
 };

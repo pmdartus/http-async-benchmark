@@ -1,13 +1,8 @@
 'use strict';
 
-var async = require('async');
 var request = require('request');
-var utils = require('./utils');
-var config = require('../config');
 
-var storeConfigPath = utils.resolvePath(process.argv[2]);
-
-var processTask = function(task, cb) {
+module.exports = function(task, cb) {
   var start = new Date().getTime();
   request({
     method: "GET",
@@ -23,24 +18,3 @@ var processTask = function(task, cb) {
     cb(null, end - start);
   });
 };
-
-async.waterfall([
-  function(cb) {
-    utils.loadStores(storeConfigPath, cb);
-  },
-  function (stores, cb) {
-    var times = [];
-    var q = async.queue(processTask, config.currency);
-
-    q.drain = function() {
-      cb(null, times);
-    };
-    
-    q.push(stores, function(err, res) {
-      times.push(res);
-    });
-  }
-], function(err, res) {
-  console.log(utils.analyseRes(res));
-});
-

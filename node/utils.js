@@ -24,7 +24,9 @@ var loadStore = function(path, cb) {
     }
 
     var stores = data.split('\n');
-    stores = stores.slice(0, config.iterations);
+    if(config.iterations) {
+      stores = stores.slice(0, config.iterations);
+    }
 
     stores = stores.map(function(store) {
       var parsed = JSON.parse(store);
@@ -36,14 +38,16 @@ var loadStore = function(path, cb) {
   });
 };
 
-var analyseRes = function(times) {
+var analyseRes = function(times, total) {
   var sum = times.reduce(function(sum, value){
     return sum + value;
   }, 0);
    
   var avg = sum / times.length;
   return {
-    requestsNumber: times.length, 
+    requestsNumber: times.length,
+    totalTimePerSec: total / 1000,
+    numberRequestPerSec: (times.length / total)  * 1000,
     max: Math.max.apply(null, times),
     min: Math.min.apply(null, times),
     avg: avg,
